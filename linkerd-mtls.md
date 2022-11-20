@@ -1,6 +1,6 @@
 # Linkerd MTLS
 
-### mutual authentication
+### Mutual Authentication
 
 The root certificate is self-signed, meaning that the organization creates it themselves. 
 (This approach does not work for one-way TLS on the public Internet because an external certificate authority has to issue those certificates.)
@@ -81,30 +81,98 @@ Understanding the current state of your system:
 linkerd check --proxy
 ```
 
-Read the current trust anchor certificate from the cluster
+### Read the current trust anchor certificate from the cluster
 
 ```bash
-kubectl -n linkerd get cm linkerd-identity-trust-roots -o=jsonpath='{.data.ca-bundle\.crt}' > original-trust-anchors.crt
+kubectl -n linkerd get cm linkerd-identity-trust-roots -o=jsonpath='{.data.ca-bundle\.crt}' > original-trust.crt
 ```
+This will generate the **original-trust.crt** file.
 
-Generate a new trust anchor
+
+### Generate a new trust anchor:
 
 ```bash
 step certificate create root.linkerd.cluster.local ca-new.crt ca-new.key --profile root-ca --no-password --insecure
 ```
+This will generate the **ca-new.crt** , **ca-new.key** file.
 
 
+### Bundle your original trust anchor with the new one
 
+```bash
+step certificate bundle ca-new.crt original-trust.crt bundle.crt
+```
+This will generate the **bundle.crt** file.
 
+### Deploying the new bundle to Linkerd
 
+use the **linkerd upgrade** command to instruct Linkerd to work with the **new trust bundle**
 
+```bash
+linkerd upgrade --identity-trust-anchors-file=./bundle.crt | kubectl apply -f -
+```
 
+we need to **restart your meshed workloads** so that they use the new trust anchor
 
+```
+kubectl -n emojivoto rollout restart deploy
+```
 
+check command to ensure that everything is ok :
+```
+linkerd check --proxy
+```
 
+### Rotating the identity issuer certificate
 
+generating the new identity issuer certificate and key:
 
+```bash
+step certificate create identity.linkerd.cluster.local issuer-new.crt issuer-new.key \
+--profile intermediate-ca --not-after 8760h --no-password --insecure \
+--ca ca-new.crt --ca-key ca-new.key
+```
 
+This new **issuer certificate** is signed by our **new trust anchor**,
+which is why it was critical to install the new trust anchor bundle
+
+rotate the identity issuer certificate and key by using the upgrade command again:
+```bash
+linkerd upgrade \
+    --identity-issuer-certificate-file=./issuer-new.crt \
+    --identity-issuer-key-file=./issuer-new.key \
+    | kubectl apply -f -
+```
+
+check for the **IssuerUpdated Kubernetes event** to be certain that Linkerd saw the new issuer certificate:
+```bash
+kubectl get events --field-selector reason=IssuerUpdated -n linkerd
+```
+
+**Restart the proxy for all injected workloads** in your cluster to ensure that their proxies pick up certificates
+issued by the new issuer:
+
+```bash
+kubectl -n emojivoto rollout restart deploy
+linkerd check --proxy
+```
+
+### Removing the old trust anchor
+
+Since the old trust anchor is now completely unused, we can now switch Linkerd from the **bundle**
+we created for the trust anchor **to** using **only the new trust anchor certificate**
+
+```bash
+linkerd upgrade  --identity-trust-anchors-file=./ca-new.crt  | kubectl apply -f -
+```
+
+```bash
+kubectl -n emojivoto rollout restart deploy
+linkerd check --proxy
+```
+---------------------------------------------------------------------------------------------------
+
+## Replacing expired certificates
 
 
 
