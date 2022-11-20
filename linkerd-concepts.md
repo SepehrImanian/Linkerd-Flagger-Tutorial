@@ -255,9 +255,22 @@ linkerd inject --close-wait-timeout
 and this command set the **privileged field** of the **proxy init** container to **true**.
 
 ---------------------------------------------------------------------------------------------------
+## HTTP Access Logging
+
+**HTTP access logging is disabled by default because it has a performance impact**
+
+Linkerd proxies can be configured to generate an **HTTP access log** that records **all HTTP requests** that transit the proxy.
+
+The HTTP access log is written to the proxy container’s **stderr stream**
+
+The **config.linkerd.io/access-log annotation** is used to enable proxy HTTP access logging,
+Adding this annotation to a namespace or workload configures the proxy injector to set 
+an environment variable in the proxy container that configures access logging.
+
+* **config.linkerd.io/access-log: "apache** ==> Apache Common Log Format
+* **config.linkerd.io/access-log: json** ==> JSON format
 
 ## Load Balancing
-## HTTP Access Logging
 ## Multi-cluster communication
 ## Traffic Split (canaries, blue/green deploys)
 
