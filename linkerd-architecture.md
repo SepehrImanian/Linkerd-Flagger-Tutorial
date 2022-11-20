@@ -1,4 +1,4 @@
-### Architecture
+## Architecture
 
 * **Control Plane**
   * **Destination Service:**
@@ -24,7 +24,7 @@ The linkerd-init container is added to each meshed pod as a Kubernetes **init co
 
 ---------------------------------------------------------------------------------------------------
 
-### Proxy Init Iptables Modes
+## Proxy Init Iptables Modes
 
 Linkerd will configure a set of firewall rules in each injected pod. 
 Configuration can be done either through an **init container** or through a **CNI plugin**
