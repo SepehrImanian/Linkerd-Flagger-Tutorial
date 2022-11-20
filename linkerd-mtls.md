@@ -302,3 +302,44 @@ check for the **IssuerUpdated Kubernetes event** to be certain that Linkerd saw 
 ```bash
 kubectl get events --field-selector reason=IssuerUpdated -n linkerd
 ```
+
+## Automatically Rotating Webhook TLS Credentials
+
+
+The **Linkerd control plane** contains several components, called **webhooks**, which are called **directly by Kubernetes** itself.
+
+The **traffic from Kubernetes to the Linkerd webhooks** is secured with TLS and therefore each of the webhooks requires a secret containing TLS credentials.
+These certificates are different from the ones that the Linkerd proxies use to secure pod-to-pod communication and use a completely separate trust chain.
+
+when Linkerd is installed, TLS credentials are automatically generated for all of the webhooks, 
+If these certificates expire or need to be regenerated for any reason, performing a Linkerd upgrade
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
