@@ -47,6 +47,8 @@ this annotation configures Linkerd to look for ServiceProfiles for off-cluster c
 config.linkerd.io/enable-external-profiles
 ```
 
+![mtls](./image/protocol-detection-decision-tree.png)
+
 ### Retries and Timeouts
 
 * Per-Route Metrics
