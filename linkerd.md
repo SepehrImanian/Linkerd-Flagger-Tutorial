@@ -54,7 +54,7 @@ config.linkerd.io/enable-external-profiles
 
 ## Retries and Timeouts
 
-* Per-Route Metrics
+* **Per-Route Metrics**
 
 you must first create a service profile. Once a service profile has been created, Linkerd will add labels to the Prometheus 
 metrics that associate a specific request to a specific route.
@@ -85,7 +85,7 @@ linkerd viz routes deploy/webapp --to svc/books
 linkerd viz tap deploy/webapp -o wide
 ```
 
-* Retries
+* **Retries**
 
 **The reason why these pieces of configuration are required is because retries can potentially be dangerous.**
 
@@ -115,7 +115,7 @@ Retries can be monitored by using the **linkerd viz routes** command with the **
 Since an original request may fail the first time, but a retry of that request might succeed, the effective success rate is usually 
 (but not always) higher than the actual success rate.
 
-* Timeouts
+* **Timeouts**
 
 To limit how long Linkerd will wait before failing an outgoing request to another service, you can configure timeouts.
 **If this timeout is reached, Linkerd will cancel the request, and return a 504 response**
@@ -140,17 +140,17 @@ linkerd viz install | kubectl apply -f -
 
 Golden metrics:
 
-* Success Rate
+* **Success Rate**
 
 This is the percentage of successful requests during a time window (1 minute by default).
 In the output of the command **linkerd viz routes -o wide**, this metric is split into **EFFECTIVE_SUCCESS** and **ACTUAL_SUCCESS**
 
-* Traffic (Requests Per Second)
+* **Traffic (Requests Per Second)**
 
 This gives an overview of how much demand is placed on the service/route. As with success rates, **linkerd viz routes --o wide** 
 splits this metric into **EFFECTIVE_RPS** and **ACTUAL_RPS**, corresponding to rates after and before retries respectively.
 
-* Latencies
+* **Latencies**
 
 Times taken to service requests per service/route are split into **50th**, **95th** and **99th** **percentiles**. 
 Lower percentiles give you an overview of the average performance of the system, while tail percentiles help catch outlier behavior.
