@@ -271,8 +271,17 @@ an environment variable in the proxy container that configures access logging.
 * **config.linkerd.io/access-log: json** ==> JSON format
 
 ## Load Balancing
+
+For HTTP, HTTP/2, and gRPC connections, Linkerd **automatically load balances** requests across all destination endpoints
+without **any configuration required**. (For TCP connections, Linkerd will balance connections.)
+
+Linkerd uses an algorithm called **EWMA**, or exponentially weighted moving average, to automatically send requests to the **fastest endpoints**.
+
+For destinations that are **in Kubernetes**, Linkerd will look up the **IP address in the Kubernetes API**.
+If the IP address **corresponds to a Service**, Linkerd will load balance **across the endpoints of that Service**
+and apply any **policy** from that Service’s **Service Profile**.
+
 ## Multi-cluster communication
-## Traffic Split (canaries, blue/green deploys)
 
 
 
