@@ -314,32 +314,45 @@ These certificates are different from the ones that the Linkerd proxies use to s
 when Linkerd is installed, TLS credentials are automatically generated for all of the webhooks, 
 If these certificates expire or need to be regenerated for any reason, performing a Linkerd upgrade
 
+## Validating your mTLS traffic
 
+* **Validating mTLS with linkerd viz edges**
 
+we can view a summary of the TCP connections between services that are managed by Linkerd.
 
+```bash
+linkerd viz -n linkerd edges deployment
+```
 
+```
+SRC          DST                      SRC_NS        DST_NS    SECURED
+prometheus   linkerd-controller       linkerd-viz   linkerd   √
+prometheus   linkerd-destination      linkerd-viz   linkerd   √
+prometheus   linkerd-identity         linkerd-viz   linkerd   √
+prometheus   linkerd-proxy-injector   linkerd-viz   linkerd   √
+prometheus   linkerd-sp-validator     linkerd-viz   linkerd   √
+```
 
+* **Validating mTLS with linkerd viz tap**
 
+watch the **requests and responses in real time** to understand what is getting mTLS’d.
 
+**tls=no_tls_from_remote message** or **tls=true**
 
+```
+linkerd viz -n linkerd tap deploy
+```
 
+```
+req id=0:0 proxy=in  src=10.42.0.1:60318 dst=10.42.0.23:9995 tls=no_tls_from_remote :method=GET :authority=10.42.0.23:9995 :path=/ready
+...
+```
 
+* **Validating mTLS with tshark (tcpdump)**
 
+The final way to validate mTLS is to look at raw network traffic within the cluster.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
+tshark -i any -d tcp.port==8080,ssl | grep -v 127.0.0.1
+```
 
