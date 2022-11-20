@@ -25,6 +25,7 @@ to verify that your services have been added to the mesh
 ```bash
 kubectl -n NAMESPACE get po -o jsonpath='{.items[0].spec.containers[*].name}'
 ```
+---------------------------------------------------------------------------------------------------
 
 ### Linkerd SMI
 
@@ -51,6 +52,8 @@ spec:
     weight: 500
 ```
 
+---------------------------------------------------------------------------------------------------
+
 ### Distributed tracing with Linkerd
 
 Unlike most features of a service mesh, distributed tracing requires modifying the **source of your application**.
@@ -62,6 +65,8 @@ linkerd jaeger check
 
 linkerd jaeger dashboard
 ```
+
+---------------------------------------------------------------------------------------------------
 
 ### Debugging HTTP applications with per-route metrics
 
@@ -164,6 +169,8 @@ spec:
 linkerd viz -n booksapp routes deploy/webapp --to svc/books -o wide
 ```
 
+---------------------------------------------------------------------------------------------------
+
 ### Injecting Faults
 
 ```
@@ -192,6 +199,8 @@ this routes command filters to all the requests being issued by webapp destined 
 ```
 linkerd viz -n booksapp routes deploy/webapp --to service/books
 ```
+
+---------------------------------------------------------------------------------------------------
 
 ### Authorization Policy
 
@@ -472,6 +481,8 @@ spec:
           name: prometheus
 ```
 
+---------------------------------------------------------------------------------------------------
+
 ### Ingress traffic
 
 Linkerd doesn’t provide a built-in ingress. Instead, Linkerd is designed to work with existing Kubernetes ingress solutions.
@@ -528,6 +539,7 @@ spec:
 
 **likerd figure out from header such as l5d-dst-override, Host, or :authority**
 
+---------------------------------------------------------------------------------------------------
 
 ### Troubleshooting
 
@@ -536,6 +548,8 @@ This section provides resolution steps for **common problems reported** with the
 
 [linkerd Troubleshooting](https://linkerd.io/2.12/tasks/troubleshooting/#l5d-existence-crb)
 
+
+---------------------------------------------------------------------------------------------------
 
 ### Graceful Pod Shutdown
 
@@ -606,6 +620,7 @@ terminationGracePeriodSeconds: 160
 
 **pod container preStop time < proxy sidecar time < terminationGracePeriodSeconds (configured for the entire pod)**
 
+---------------------------------------------------------------------------------------------------
 
 ### Restricting Access To Services
 

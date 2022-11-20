@@ -10,6 +10,7 @@ When an **HTTP** (not HTTPS) request is received by a **Linkerd proxy**, the des
 If a service profile for that destination service exists, then that service profile is used to to provide **per-route metrics**,
 **retries** and **timeouts**.
 
+---------------------------------------------------------------------------------------------------
 
 ### TCP Proxying and Protocol Detection
 
@@ -48,6 +49,8 @@ config.linkerd.io/enable-external-profiles
 ```
 
 ![mtls](./image/protocol-detection-decision-tree.png)
+
+---------------------------------------------------------------------------------------------------
 
 ### Retries and Timeouts
 
@@ -127,6 +130,8 @@ spec:
     timeout: 300ms
 ```
 
+---------------------------------------------------------------------------------------------------
+
 ### Telemetry and Monitoring
 
 ```
@@ -150,6 +155,8 @@ splits this metric into **EFFECTIVE_RPS** and **ACTUAL_RPS**, corresponding to r
 Times taken to service requests per service/route are split into **50th**, **95th** and **99th** **percentiles**. 
 Lower percentiles give you an overview of the average performance of the system, while tail percentiles help catch outlier behavior.
 
+
+---------------------------------------------------------------------------------------------------
 
 ### Authorization Policy
 
@@ -191,6 +198,7 @@ For finer-grained policy that applies to specific ports, routes, or more, Linker
 **AuthorizationPolicy** as a more flexible alternative to **ServerAuthorization** that can target **HTTPRoutes** as well as **Servers**.
 **ServerAuthorization will be deprecated in future releases**.
 
+---------------------------------------------------------------------------------------------------
 
 ### Debugging 502s
 
@@ -245,6 +253,8 @@ linkerd inject --close-wait-timeout
 ```
 
 and this command set the **privileged field** of the **proxy init** container to **true**.
+
+---------------------------------------------------------------------------------------------------
 
 ### Automatic mTLS
 ### Ingress

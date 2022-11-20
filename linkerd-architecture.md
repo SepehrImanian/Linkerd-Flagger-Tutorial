@@ -22,6 +22,8 @@ The linkerd-init container is added to each meshed pod as a Kubernetes **init co
 
 ![mtls](./image/control-plane.png)
 
+---------------------------------------------------------------------------------------------------
+
 ### Proxy Init Iptables Modes
 
 Linkerd will configure a set of firewall rules in each injected pod. 
