@@ -1,4 +1,4 @@
-# linkerd
+# Linkerd Concepts
 
 ## Service Profiles
 

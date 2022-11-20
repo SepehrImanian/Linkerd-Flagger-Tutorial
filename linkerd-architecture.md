@@ -1,3 +1,5 @@
+# Linkerd Architecture
+
 ## Architecture
 
 * **Control Plane**

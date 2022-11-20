@@ -1,3 +1,5 @@
+# Linkerd Practical
+
 ## Add services to Linkerd
 
 services that communicate using certain **non-HTTP** protocols (including MySQL, SMTP, Memcache, and others)
