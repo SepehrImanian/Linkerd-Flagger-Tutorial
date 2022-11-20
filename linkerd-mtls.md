@@ -174,12 +174,45 @@ linkerd check --proxy
 
 ## Replacing expired certificates
 
+### Replacing the root and issuer certificates
+
+If your root certificate is expired or you do not have its key, you need to
+replace both your root and issuer certificates at the same time
+
+same as before like **Generating your own mTLS root certificates**
+
+generate the root certificate with its private key:
+```bash
+step certificate create root.linkerd.cluster.local ca.crt ca.key \
+--profile root-ca --no-password --insecure
+```
+this generates the **ca.crt** and **ca.key** files.
 
 
+Then generate the intermediate certificate and key pair:
+```bash
+step certificate create identity.linkerd.cluster.local issuer.crt issuer.key \
+--profile intermediate-ca --not-after 8760h --no-password --insecure \
+--ca ca.crt --ca-key ca.key
+```
+This will generate the **issuer.crt** and **issuer.key** files.
 
+```bash
+linkerd upgrade \
+    --identity-issuer-certificate-file=./issuer-new.crt \
+    --identity-issuer-key-file=./issuer-new.key \
+    --identity-trust-anchors-file=./ca-new.crt \
+    --force \
+    | kubectl apply -f -
+```
 
+```
+linkerd check --proxy
+kubectl rollout restart
+```
+---------------------------------------------------------------------------------------------------
 
-
+## Automatically Rotating Control Plane TLS Credentials
 
 
 
