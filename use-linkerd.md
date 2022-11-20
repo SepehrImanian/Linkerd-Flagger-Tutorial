@@ -493,7 +493,7 @@ Combining Linkerd and your ingress solution requires two things:
 ```
 * **Traefik**
 
-```
+```yaml
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
@@ -590,7 +590,7 @@ delay the **Linkerd proxy’s** handling of the **TERM signal** for a given numb
 linkerd inject --wait-before-exit-seconds
 ```
 
-```
+```yaml
    # application container
     lifecycle:
       preStop:

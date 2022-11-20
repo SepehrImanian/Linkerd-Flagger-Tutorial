@@ -85,7 +85,7 @@ linkerd viz tap deploy/webapp -o wide
 **The reason why these pieces of configuration are required is because retries can potentially be dangerous.**
 
 For routes that are idempotent and don’t have bodies, you can edit the service profile and add isRetryable to the retryable route:
-```
+```yaml
 spec:
   routes:
   - name: GET /api/annotations
@@ -96,7 +96,7 @@ spec:
 ```
 A retry budget is a mechanism that **limits the number of retries** that can be performed against a service as a percentage of original requests.
 
-```
+```yaml
 spec:
   retryBudget:
     retryRatio: 0.2
@@ -115,7 +115,7 @@ Since an original request may fail the first time, but a retry of that request m
 To limit how long Linkerd will wait before failing an outgoing request to another service, you can configure timeouts.
 **If this timeout is reached, Linkerd will cancel the request, and return a 504 response**
 
-```
+```yaml
 spec:
   routes:
   - condition:
