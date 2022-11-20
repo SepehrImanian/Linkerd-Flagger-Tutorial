@@ -256,14 +256,7 @@ and this command set the **privileged field** of the **proxy init** container to
 
 ---------------------------------------------------------------------------------------------------
 
-## Automatic mTLS
-## Ingress
 ## Load Balancing
-## Automatic Proxy Injection
-## Dashboard and on-cluster metrics stack
-## Distributed Tracing
-## Fault Injection
-## High Availability
 ## HTTP Access Logging
 ## Multi-cluster communication
 ## Traffic Split (canaries, blue/green deploys)

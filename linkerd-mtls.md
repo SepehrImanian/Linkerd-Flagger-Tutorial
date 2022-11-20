@@ -215,17 +215,90 @@ kubectl rollout restart
 ## Automatically Rotating Control Plane TLS Credentials
 
 
+create the namespace that cert-manager will use to **store its Linkerd-related resources**.
+```
+kubectl create namespace linkerd
+```
+
+### Save the signing key pair as a Secret
+
+using the step tool, create a signing key pair and store it in a Kubernetes Secret
+for longer-lived trust anchor certificate, pass the **--not-after** (--not-after=87600h)
+```
+step certificate create root.linkerd.cluster.local ca.crt ca.key \
+  --profile root-ca --no-password --insecure &&
+  kubectl create secret tls \
+    linkerd-trust-anchor \
+    --cert=ca.crt \
+    --key=ca.key \
+    --namespace=linkerd
+```
+
+### Create an Issuer referencing the secret
+
+**create root certificate (Trust anchor certificate)**
+
+```
+kubectl apply -f - <<EOF
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: linkerd-trust-anchor
+  namespace: linkerd
+spec:
+  ca:
+    secretName: linkerd-trust-anchor
+EOF
+```
+
+### Create a Certificate resource referencing the Issuer
+
+**create Issuer certificate and key**
+
+```
+kubectl apply -f - <<EOF
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: linkerd-identity-issuer
+  namespace: linkerd
+spec:
+  secretName: linkerd-identity-issuer
+  duration: 48h
+  renewBefore: 25h
+  issuerRef:
+    name: linkerd-trust-anchor
+    kind: Issuer
+  commonName: identity.linkerd.cluster.local
+  dnsNames:
+  - identity.linkerd.cluster.local
+  isCA: true
+  privateKey:
+    algorithm: ECDSA
+  usages:
+  - cert sign
+  - crl sign
+  - server auth
+  - client auth
+EOF
+```
+cert-manager can now use this Certificate resource to **obtain TLS credentials**,
+which will be stored in a **secret named linkerd-identity-issuer**
+
+```bash
+kubectl get secret linkerd-identity-issuer -o yaml -n linkerd
+```
+
+### Using these credentials with CLI installation
+
+For **CLI installation**, the **Linkerd control plane** should be installed with the **--identity-external-issuer flag**,
+which instructs Linkerd to read certificates from the **linkerd-identity-issuer secret**. Whenever certificate and
+key stored in the secret are updated,the identity service will automatically detect this change and reload the new credentials.
 
 
+### Observing the update process
 
-
-
-
-
-
-
-
-
-
-
-
+check for the **IssuerUpdated Kubernetes event** to be certain that Linkerd saw the new issuer certificate:
+```bash
+kubectl get events --field-selector reason=IssuerUpdated -n linkerd
+```
