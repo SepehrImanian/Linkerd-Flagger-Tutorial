@@ -48,7 +48,7 @@ this annotation configures Linkerd to look for ServiceProfiles for off-cluster c
 config.linkerd.io/enable-external-profiles
 ```
 
-![mtls](./image/protocol-detection-decision-tree.png)
+![mtls](./images/protocol-detection-decision-tree.png)
 
 ---------------------------------------------------------------------------------------------------
 
