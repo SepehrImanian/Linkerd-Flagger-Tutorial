@@ -534,7 +534,7 @@ spec:
 This section provides resolution steps for **common problems reported** with the linkerd check command
 
 
-linkerd Troubleshooting [linkerd Troubleshooting](https://linkerd.io/2.12/tasks/troubleshooting/#l5d-existence-crb)
+[linkerd Troubleshooting](https://linkerd.io/2.12/tasks/troubleshooting/#l5d-existence-crb)
 
 
 ### Graceful Pod Shutdown
@@ -576,7 +576,7 @@ the shutdown grace period is 120 seconds.
 The await binary can be used with a **--shutdown** option, in which case,
 after the process it has wrapped finished, it will send a shutdown request to the proxy.
 
-github linkerd-await [github linkerd-await](https://github.com/linkerd/linkerd-await)
+[github linkerd-await](https://github.com/linkerd/linkerd-await)
 
 
 Before Kubernetes terminates a pod, it first removes that pod from the **endpoints resource** of any services that pod is a member of.
