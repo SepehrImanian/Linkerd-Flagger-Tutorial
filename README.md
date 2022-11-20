@@ -14,7 +14,7 @@
 
 > Here I have explained the concepts that are exactly one of the characteristics of linkerd. In this part, I tried to explain only the sentences and keywords that you need to know in order to understand each of the linkerd concepts in the smallest possible volume.
 
-* ### [Linkerd](./linkerd-practical.md)
+* ### [Linkerd Practical](./linkerd-practical.md)
 
 > This is exactly the part where you enter the linked world and learn all the scenarios you need in a practical way.
 
