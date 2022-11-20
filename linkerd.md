@@ -190,7 +190,7 @@ For finer-grained policy that applies to specific ports, routes, or more, Linker
 **ServerAuthorization will be deprecated in future releases**.
 
 
-#### Debugging 502s
+### Debugging 502s
 
 When the Linkerd proxy encounters connection errors while processing a request, it will typically return an **HTTP 502 (Bad Gateway)** response.
 
