@@ -1,4 +1,4 @@
-#### Add services to Linkerd
+### Add services to Linkerd
 
 services that communicate using certain **non-HTTP** protocols (including MySQL, SMTP, Memcache, and others)
 
@@ -26,7 +26,7 @@ to verify that your services have been added to the mesh
 kubectl -n NAMESPACE get po -o jsonpath='{.items[0].spec.containers[*].name}'
 ```
 
-#### Linkerd SMI
+### Linkerd SMI
 
 Linkerd supports **SMI’s TrafficSplit** specification which can be used to perform **traffic splitting across services** natively
 
@@ -51,7 +51,7 @@ spec:
     weight: 500
 ```
 
-#### Distributed tracing with Linkerd
+### Distributed tracing with Linkerd
 
 Unlike most features of a service mesh, distributed tracing requires modifying the **source of your application**.
 
@@ -63,7 +63,7 @@ linkerd jaeger check
 linkerd jaeger dashboard
 ```
 
-#### Debugging HTTP applications with per-route metrics
+### Debugging HTTP applications with per-route metrics
 
 * **Service Profiles**
 
@@ -164,7 +164,7 @@ spec:
 linkerd viz -n booksapp routes deploy/webapp --to svc/books -o wide
 ```
 
-#### Injecting Faults
+### Injecting Faults
 
 ```
 linkerd viz -n booksapp stat deploy
@@ -193,9 +193,9 @@ this routes command filters to all the requests being issued by webapp destined 
 linkerd viz -n booksapp routes deploy/webapp --to service/books
 ```
 
-#### Authorization Policy
+### Authorization Policy
 
-##### Server
+#### Server
 
 A Server selects a port on a set of pods in the same namespace as the server.
 While the Server resource is similar to a **Kubernetes Service**
@@ -254,7 +254,7 @@ spec:
   proxyProtocol: "HTTP/2"
 ```
 
-##### HTTPRoute
+#### HTTPRoute
 
 * An HTTPRoute represents a subset of traffic handled by a **Server**.
 * HTTPRoutes are “attached” to Servers and have match rules which determine which requests match.
@@ -285,7 +285,7 @@ spec:
 ```
 
 
-##### AuthorizationPolicy
+#### AuthorizationPolicy
 
 * An **AuthorizationPolicy** provides a way to authorize traffic to a **Server** or an **HTTPRoute**. 
 * **AuthorizationPolicies** are a replacement for **ServerAuthorizations** which are more flexible because 
@@ -346,7 +346,7 @@ spec:
       kind: ServiceAccount
 ```
 
-##### MeshTLSAuthentication
+#### MeshTLSAuthentication
 
 
 * A MeshTLSAuthentication represents a **set of mesh identities**.
@@ -385,7 +385,7 @@ spec:
       name: webapp
 ```
 
-##### NetworkAuthentication
+#### NetworkAuthentication
 
 * A NetworkAuthentication represents a **set of IP subnets**.
 * When an **AuthorizationPolicy** has a NetworkAuthentication as one of its **requiredAuthenticationRefs**,
@@ -405,7 +405,7 @@ spec:
   - cidr: 192.168.0.0/16
 ```
 
-##### ServerAuthorization
+#### ServerAuthorization
 
 * A ServerAuthorization provides a way to authorize traffic to **one or more Servers**.
 
@@ -472,7 +472,7 @@ spec:
           name: prometheus
 ```
 
-#### Ingress traffic
+### Ingress traffic
 
 Linkerd doesn’t provide a built-in ingress. Instead, Linkerd is designed to work with existing Kubernetes ingress solutions.
 
@@ -529,7 +529,7 @@ spec:
 **likerd figure out from header such as l5d-dst-override, Host, or :authority**
 
 
-#### Troubleshooting
+### Troubleshooting
 
 This section provides resolution steps for **common problems reported** with the linkerd check command
 
@@ -537,7 +537,7 @@ This section provides resolution steps for **common problems reported** with the
 linkerd Troubleshooting [linkerd Troubleshooting](https://linkerd.io/2.12/tasks/troubleshooting/#l5d-existence-crb)
 
 
-#### Graceful Pod Shutdown
+### Graceful Pod Shutdown
 
 When Kubernetes begins to terminate a pod, it starts by sending all containers in that pod a **TERM signal**.
 When the **Linkerd proxy sidecar** receives this signal, it will immediately begin a **graceful shutdown** where 
@@ -607,7 +607,7 @@ terminationGracePeriodSeconds: 160
 **pod container preStop time < proxy sidecar time < terminationGracePeriodSeconds (configured for the entire pod)**
 
 
-#### Restricting Access To Services
+### Restricting Access To Services
 
 Linkerd policy resources can be used to restrict which clients may access a service. 
 

@@ -1,6 +1,6 @@
-### linkerd
+## linkerd
 
-#### Service Profiles
+### Service Profiles
 
 A service profile is a custom Kubernetes resource (CRD)
 
@@ -11,7 +11,7 @@ If a service profile for that destination service exists, then that service prof
 **retries** and **timeouts**.
 
 
-#### TCP Proxying and Protocol Detection
+### TCP Proxying and Protocol Detection
 
 Linkerd is capable of proxying all TCP traffic, including TLS connections, WebSockets, and HTTP tunneling.
 
@@ -47,7 +47,7 @@ this annotation configures Linkerd to look for ServiceProfiles for off-cluster c
 config.linkerd.io/enable-external-profiles
 ```
 
-#### Retries and Timeouts
+### Retries and Timeouts
 
 * Per-Route Metrics
 
@@ -125,7 +125,7 @@ spec:
     timeout: 300ms
 ```
 
-#### Telemetry and Monitoring
+### Telemetry and Monitoring
 
 ```
 linkerd viz install | kubectl apply -f -
@@ -149,7 +149,7 @@ Times taken to service requests per service/route are split into **50th**, **95t
 Lower percentiles give you an overview of the average performance of the system, while tail percentiles help catch outlier behavior.
 
 
-#### Authorization Policy
+### Authorization Policy
 
 Linkerd’s authorization policy allows you to control which types of traffic are allowed to meshed pods.
 
@@ -158,7 +158,7 @@ you can restrict communication to a particular service (or HTTP route on a servi
 you can enforce that mTLS must be used on a certain port; and so on
 
 
-##### Default policies
+#### Default policies
 
 
 The **config.linkerd.io/default-inbound-policy** annotation can be set at a namespace, workload, and pod level,
@@ -175,7 +175,7 @@ Annotations that are present at the workload or **namespace level** at pod creat
 to determine the default policy for that pod.
 
 
-##### Fine-grained policies
+#### Fine-grained policies
 
 For finer-grained policy that applies to specific ports, routes, or more, Linkerd uses a set of CRDs.
 
@@ -190,7 +190,7 @@ For finer-grained policy that applies to specific ports, routes, or more, Linker
 **ServerAuthorization will be deprecated in future releases**.
 
 
-##### Debugging 502s
+#### Debugging 502s
 
 When the Linkerd proxy encounters connection errors while processing a request, it will typically return an **HTTP 502 (Bad Gateway)** response.
 
@@ -244,17 +244,17 @@ linkerd inject --close-wait-timeout
 
 and this command set the **privileged field** of the **proxy init** container to **true**.
 
-#### Automatic mTLS
-#### Ingress
-#### Load Balancing
-#### Automatic Proxy Injection
-#### Dashboard and on-cluster metrics stack
-#### Distributed Tracing
-#### Fault Injection
-#### High Availability
-#### HTTP Access Logging
-#### Multi-cluster communication
-#### Traffic Split (canaries, blue/green deploys)
+### Automatic mTLS
+### Ingress
+### Load Balancing
+### Automatic Proxy Injection
+### Dashboard and on-cluster metrics stack
+### Distributed Tracing
+### Fault Injection
+### High Availability
+### HTTP Access Logging
+### Multi-cluster communication
+### Traffic Split (canaries, blue/green deploys)
 
 
 

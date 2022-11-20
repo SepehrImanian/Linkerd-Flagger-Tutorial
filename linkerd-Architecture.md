@@ -19,7 +19,7 @@ designed specifically for the service mesh use case and is not designed as a gen
 * Linkerd-init Container
 The linkerd-init container is added to each meshed pod as a Kubernetes **init container** that runs before any other containers are started. It uses **iptables** to route all TCP traffic to and from the pod through the proxy. Linkerd’s init container can be run in different modes which determine what **iptables variant** is used.
 
-#### Proxy Init Iptables Modes
+### Proxy Init Iptables Modes
 
 * Linkerd will configure a set of firewall rules in each injected pod. Configuration can be done either through an **init container** or through a **CNI plugin**
 * Linkerd’s init container can be run in two separate modes: **legacy** or **nft**. The difference between the two modes is what variant of **iptables** they will use to configure firewall rules.
