@@ -163,7 +163,7 @@ In the output of the command **linkerd viz routes -o wide**, this metric is spli
 * **Traffic (Requests Per Second)**
 
 This gives an overview of how much demand is placed on the service/route. As with success rates, **linkerd viz routes --o wide** 
-splits this metric into **EFFECTIVE_RPS** and **ACTUAL_RPS**, corresponding to rates after and before retries respectively.
+splits this metric into **EFFECTIVE_RPS** and **ACTUAL_RPS**, corresponding to rates after and before **retries respectively**.
 
 * **Latencies**
 
@@ -189,9 +189,9 @@ The **config.linkerd.io/default-inbound-policy** annotation can be set at a name
 and will determine the default traffic policy at that point in the hierarchy
 
 
-* **all-unauthenticated:** allow all requests. This is the default.
+* **all-unauthenticated:** allow all requests. **This is the default**.
 * **all-authenticated:** allow requests from meshed clients only.
-* **cluster-authenticated:** allow requests form meshed clients in the same cluster.
+* **cluster-authenticated:** allow requests form meshed clients in the same cluster. (multi cluster)
 * **deny:** deny all requests.
 
 Every cluster has a cluster-wide default policy (**by default, all-unauthenticated**), set at install time.
@@ -201,7 +201,7 @@ to determine the default policy for that pod.
 
 ### Fine-grained policies
 
-For finer-grained policy that applies to specific ports, routes, or more, Linkerd uses a set of CRDs.
+For finer-grained policy that applies to specific **ports**, **routes**, or more, Linkerd uses a set of **CRDs**.
 
 * **Server:** all traffic to a port, for a set of pods in a namespace
 * **HTTPRoute:** a subset of HTTP requests for a Server
@@ -282,8 +282,8 @@ The **config.linkerd.io/access-log annotation** is used to enable proxy HTTP acc
 Adding this annotation to a namespace or workload configures the proxy injector to set 
 an environment variable in the proxy container that configures access logging.
 
-* **config.linkerd.io/access-log: "apache** ==> Apache Common Log Format
-* **config.linkerd.io/access-log: json** ==> JSON format
+* **config.linkerd.io/access-log: "apache"** ==> Apache Common Log Format
+* **config.linkerd.io/access-log: "json"** ==> JSON format
 
 ## Load Balancing
 
