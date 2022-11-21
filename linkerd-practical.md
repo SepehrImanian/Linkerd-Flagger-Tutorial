@@ -783,10 +783,13 @@ we created the **ServerAuthorization** where **all requests were being rejected*
 ==> **create the ServiceAuthorizations BEFORE creating the Server so that clients will be authorized immediately**
 
 
+## Configuring Per-Route Policy
 
+**authorization policies** can also be configured for **individual HTTP routes**.
 
+we’ll use the Books demo app to demonstrate how to control which clients can access particular routes on a service.
 
-
+### Creating a Server resource
 
 
 

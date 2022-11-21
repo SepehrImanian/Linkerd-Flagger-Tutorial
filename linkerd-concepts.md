@@ -6,9 +6,24 @@ A service profile is a custom Kubernetes resource (CRD)
 
 provide Linkerd additional information about a service and how to handle requests for a service
 
-When an **HTTP** (not HTTPS) request is received by a **Linkerd proxy**, the destination service of that request is identified.
-If a service profile for that destination service exists, then that service profile is used to to provide **per-route metrics**,
+When an **HTTP** (not HTTPS) request is received by a **Linkerd proxy**, the **destination service** of that request is identified.
+If a service profile for that **destination service** exists, then that service profile is used to to provide **per-route metrics**,
 **retries** and **timeouts**.
+
+```yaml
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: rating-service.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+    - condition:
+        method: GET
+        pathRegex: /ratings/[^/]*
+      name: GET /ratings/{id}
+      timeout: 1s
+```
 
 ---------------------------------------------------------------------------------------------------
 
@@ -19,13 +34,13 @@ Linkerd is capable of proxying all TCP traffic, including TLS connections, WebSo
 If Linkerd detects that a connection is HTTP or HTTP/2, Linkerd automatically provides **HTTP-level metrics and routing**.
 If Linkerd cannot determine that a connection is using HTTP or HTTP/2, Linkerd will proxy the connection as a plain **TCP connection**
 
-Linkerd’s protocol detection will time out because it doesn’t see any bytes from the client. This situation is commonly encountered when using
+Linkerd’s protocol detection will **time out** because it doesn’t see any bytes from the client. This situation is commonly encountered when using
 protocols where the server sends data before the client does (such as SMTP) or protocols that proactively establish connections without sending data 
 (such as Memcache). In this case, the connection will proceed as a **TCP connection after a 10-second protocol detection delay**.
 
 There are two basic mechanisms for configuring protocol detection:
 
-* **Opaque ports** instruct Linkerd to skip protocol detection and proxy the connection as a **TCP stream**
+* **Opaque ports** instruct Linkerd to **skip protocol detection** and proxy the connection as a **TCP stream**
 
 (25 (SMTP), 587 (SMTP), 3306 (MySQL), 4444 (Galera), 5432 (Postgres), 6379 (Redis), 9300 (ElasticSearch), and 11211 (Memcache).)
 
@@ -89,7 +104,7 @@ linkerd viz tap deploy/webapp -o wide
 
 **The reason why these pieces of configuration are required is because retries can potentially be dangerous.**
 
-For routes that are idempotent and don’t have bodies, you can edit the service profile and add isRetryable to the retryable route:
+For routes that are idempotent and don’t have bodies, you can edit the **service profile** and add isRetryable to the retryable route:
 ```yaml
 spec:
   routes:
@@ -280,8 +295,6 @@ Linkerd uses an algorithm called **EWMA**, or exponentially weighted moving aver
 For destinations that are **in Kubernetes**, Linkerd will look up the **IP address in the Kubernetes API**.
 If the IP address **corresponds to a Service**, Linkerd will load balance **across the endpoints of that Service**
 and apply any **policy** from that Service’s **Service Profile**.
-
-## Multi-cluster communication
 
 
 
