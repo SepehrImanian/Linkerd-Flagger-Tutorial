@@ -4,11 +4,11 @@
 
 * **Control Plane**
   * **Destination Service:**
-    It is used to fetch **service discovery** information to fetch policy information about which types of requests are allowed; to fetch service profile information used to inform per-route metrics, retries, and timeouts; 
+    It is used to fetch **service discovery** information to fetch policy information about which types of requests are allowed; to fetch **service profile** information used to inform **per-route metrics, retries, and timeouts**; 
   * **Identity Service:**
     The identity service acts as a **TLS Certificate Authority** that accepts CSRs from proxies and returns signed certificates. These certificates are issued at proxy initialization time and are used for proxy-to-proxy connections to implement mTLS.
   * **Proxy Injector:**
-    The proxy injector is a Kubernetes admission controller that receives a **webhook** request every time a **pod is created**. This injector inspects resources for a **Linkerd-specific annotation** (linkerd.io/inject: enabled). When that annotation exists, the injector mutates the pod’s specification and adds the **proxy-init** and **linkerd-proxy** containers to the pod, along with the relevant start-time configuration
+    The proxy injector is a Kubernetes admission controller that receives a **webhook** request every time a **pod is created**. This injector inspects resources for a **Linkerd-specific annotation** (**linkerd.io/inject: enabled**). When that annotation exists, the injector mutates the pod’s specification and adds the **proxy-init** and **linkerd-proxy** containers to the pod, along with the relevant start-time configuration
 
 * **Data Plane**
 comprises ultralight micro-proxies which are deployed as **sidecar containers inside application pods**
@@ -23,6 +23,20 @@ The linkerd-init container is added to each meshed pod as a Kubernetes **init co
 
 
 ![mtls](./images/control-plane.png)
+
+---------------------------------------------------------------------------------------------------
+
+## How Linkerd uses iptables to transparently route Kubernetes traffic
+
+The **nat table** allows us to **rewrite the packet’s source and/or destination**
+
+When a **packet arrives**, we want to rewrite its **destination to the proxy** instead of the **application process**.
+
+The nat table has two default chains:
+
+* **PREROUTING chain**, which is traversed when a **packet arrives**
+* **OUTPUT chain**, which is traversed when a **local process produces a packet**
+
 
 ---------------------------------------------------------------------------------------------------
 

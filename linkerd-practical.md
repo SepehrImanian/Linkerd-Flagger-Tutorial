@@ -698,18 +698,89 @@ kubectl get deployment <ingress-controller> -n <ingress-namespace> -o yaml | lin
 Linkerd policy resources can be used to restrict which clients may access a service. 
 
 
+### Creating a Server resource
+
+```
+kubectl apply -f - <<EOF
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: Server
+metadata:
+  namespace: emojivoto
+  name: voting-grpc
+  labels:
+    app: voting-svc
+spec:
+  podSelector:
+    matchLabels:
+      app: voting-svc
+  port: grpc
+  proxyProtocol: gRPC
+EOF
+```
+
+**linkerd viz authz** command to look at the **authorization status**
+
+### Creating a ServerAuthorization resource
+
+```
+kubectl apply -f - <<EOF
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: ServerAuthorization
+metadata:
+  namespace: emojivoto
+  name: voting-grpc
+  labels:
+    app.kubernetes.io/part-of: emojivoto
+    app.kubernetes.io/name: voting
+    app.kubernetes.io/version: v11
+spec:
+  server:
+    name: voting-grpc
+  # The voting service only allows requests from the web service.
+  client:
+    meshTLS:
+      serviceAccounts:
+        - name: web
+EOF
+```
+
+We can also test that request from other pods will be rejected by creating a grpcurl pod
+and attempting to access the Voting service from it, Because this client has **not been authorized**,
+this request gets rejected with a **PermissionDenied error**.
+
+```bash
+kubectl run grpcurl --rm -it --image=networld/grpcurl --restart=Never --command -- ./grpcurl -plaintext voting-svc.emojivoto:8080 emojivoto.v1.VotingService/VoteDog
+```
+```
+Error invoking method "emojivoto.v1.VotingService/VoteDog": failed to query for service descriptor "emojivoto.v1.VotingService": rpc error: code = PermissionDenied desc =
+```
+
+### Setting a Default Policy
+
+you can set a **default policy** which will apply to all ports which **do not have a Server resource defined**
+
+* If the port has a Server resource and the client **matches a ServerAuthorization** resource for it: **ALLOW**
+* If the port has a Server resource but the client **does not match any ServerAuthorizations** for it: **DENY**
+* **if the port does not have a Server resource: use the default policy**
 
 
+```
+linkerd upgrade --default-inbound-policy deny | kubectl apply -f -
+```
 
+**or**
 
+```
+config.linkerd.io/default-inbound-policy annotation
+```
 
+### Notice
 
-
-
-
-
-
-
+You may have noticed that there was a period of time after we created the **Server** resource but **before**
+we created the **ServerAuthorization** where **all requests were being rejected**, To avoid this situation in live systems
+==> **create the ServiceAuthorizations BEFORE creating the Server so that clients will be authorized immediately**
 
 
 
