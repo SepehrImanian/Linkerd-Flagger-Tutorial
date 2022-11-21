@@ -77,7 +77,7 @@ linkerd jaeger dashboard
 **Service profiles** provide Linkerd with some additional information about your services.
 These define the **routes** that you’re serving and, among other things, allow for the **collection of metrics on a per route** basis.
 
-One of the easiest ways to get **service profiles setup**is by using existing **OpenAPI (Swagger)** specs.
+One of the easiest ways to get **service profiles setup** is by using existing **OpenAPI (Swagger)** specs.
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/booksapp/webapp.swagger \
@@ -208,7 +208,7 @@ linkerd viz -n booksapp routes deploy/webapp --to service/books
 
 ### Server
 
-A Server selects a port on a set of pods in the same namespace as the server.
+A Server selects a **port** on a set of pods in the same namespace as the **server**.
 While the Server resource is similar to a **Kubernetes Service**
 
 When a Server selects a port, all traffic to that port is then **denied by default**, regardless of the default policy.
@@ -267,9 +267,9 @@ spec:
 
 ### HTTPRoute
 
-* An HTTPRoute represents a subset of traffic handled by a **Server**.
-* HTTPRoutes are “attached” to Servers and have match rules which determine which requests match.
-  Matches can be based on path, headers, query params, and/or verb.
+* An HTTPRoute represents a **subset of** traffic handled by a **Server**.
+* HTTPRoutes are **attached** to Servers and have match rules which determine which requests match.
+  Matches can be based on **path, headers, query params**, and/or verb.
 * **AuthorizationPolicies** may target HTTPRoute resources, thereby authorizing traffic to that HTTPRoute only rather than to the entire Server.
 
 
@@ -421,7 +421,7 @@ spec:
 * A ServerAuthorization provides a way to authorize traffic to **one or more Servers**.
 
 *  AuthorizationPolicy is a more flexible alternative to ServerAuthorization that can target HTTPRoutes as well as Servers.
-   Use of **AuthorizationPolicy is preferred**, and ServerAuthorization will be **deprecated in future releases.
+   Use of **AuthorizationPolicy is preferred**, and ServerAuthorization will be **deprecated** in future releases.
 
 
 A ServerAuthorization that allows meshed clients with *.emojivoto.serviceaccount.identity.linkerd.cluster.local proxy identity i.e. 
@@ -539,7 +539,7 @@ spec:
       port: 80
 ```
 
-**likerd figure out from header such as l5d-dst-override, Host, or :authority**
+**linkerd figure out from header such as l5d-dst-override, Host, or :authority**
 
 ---------------------------------------------------------------------------------------------------
 
@@ -598,7 +598,7 @@ after the process it has wrapped finished, it will send a shutdown request to th
 Before Kubernetes terminates a pod, it first removes that pod from the **endpoints resource** of any services that pod is a member of.
 This means that clients of that service should stop sending traffic to the pod before it is terminated. However ,certain clients can be
 **slow to receive the endpoints update** and may attempt to send requests to the terminating pod after that pod’s proxy has already received
-the **TERM signal** and begun graceful shutdown. Those requests will **fail**.4
+the **TERM signal** and begun graceful shutdown. Those requests will **fail**.
 
 
 delay the **Linkerd proxy’s** handling of the **TERM signal** for a given number of seconds using a **preStop hook**
@@ -630,7 +630,7 @@ The Linkerd data plane’s **proxies are multithreaded**, and are capable of run
 of worker threads so that their resource usage matches the application workload.
 
 
-he primary method of tuning proxy resource usage is **limiting the number of worker threads** used by the proxy to forward traffic. 
+the primary method of tuning proxy resource usage is **limiting the number of worker threads** used by the proxy to forward traffic. 
 
 ### There are multiple methods for doing this:
 
