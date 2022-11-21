@@ -14,11 +14,11 @@
 comprises ultralight micro-proxies which are deployed as **sidecar containers inside application pods**
 These proxies transparently intercept TCP connections to and from each pod, thanks to **iptables** rules put in place by the **linkerd-init** (or, alternatively, by **Linkerd’s CNI plugin**).
 
-* **Proxy**
+   * **Proxy**
 The Linkerd2-proxy is an ultralight, transparent micro-proxy written in Rust.
 designed specifically for the service mesh use case and is not designed as a general-purpose proxy.
 
-* **Linkerd-init Container**
+   * **Linkerd-init Container**
 The linkerd-init container is added to each meshed pod as a Kubernetes **init container** that runs before any other containers are started. It uses **iptables** to route all TCP traffic to and from the pod through the proxy. Linkerd’s init container can be run in different modes which determine what **iptables variant** is used.
 
 
