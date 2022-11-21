@@ -62,3 +62,4 @@ Once configured, all injected workloads (including the control plane) will use t
 linkerd install --set "proxyInit.mode=nft" | kubectl apply -f -
 ```
 
+[legacy vs nft mode](https://developers.redhat.com/blog/2020/08/18/iptables-the-two-variants-and-their-relationship-with-nftables#)
