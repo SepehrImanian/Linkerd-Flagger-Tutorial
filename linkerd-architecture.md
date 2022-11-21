@@ -3,6 +3,7 @@
 ## Architecture
 
 * **Control Plane**
+
   * **Destination Service:**
     It is used to fetch **service discovery** information to fetch policy information about which types of requests are allowed; to fetch **service profile** information used to inform **per-route metrics, retries, and timeouts**; 
   * **Identity Service:**
@@ -11,6 +12,7 @@
     The proxy injector is a Kubernetes admission controller that receives a **webhook** request every time a **pod is created**. This injector inspects resources for a **Linkerd-specific annotation** (**linkerd.io/inject: enabled**). When that annotation exists, the injector mutates the pod’s specification and adds the **proxy-init** and **linkerd-proxy** containers to the pod, along with the relevant start-time configuration
 
 * **Data Plane**
+
 comprises ultralight micro-proxies which are deployed as **sidecar containers inside application pods**
 These proxies transparently intercept TCP connections to and from each pod, thanks to **iptables** rules put in place by the **linkerd-init** (or, alternatively, by **Linkerd’s CNI plugin**).
 
