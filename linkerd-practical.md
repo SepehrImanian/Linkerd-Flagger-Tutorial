@@ -624,6 +624,75 @@ terminationGracePeriodSeconds: 160
 
 ---------------------------------------------------------------------------------------------------
 
+## Configuring Proxy Concurrency
+
+The Linkerd data plane’s **proxies are multithreaded**, and are capable of running a variable number
+of worker threads so that their resource usage matches the application workload.
+
+
+he primary method of tuning proxy resource usage is **limiting the number of worker threads** used by the proxy to forward traffic. 
+
+### There are multiple methods for doing this:
+
+* **Using the proxy-cpu-limit Annotation**
+
+When the environment variable configured by the **proxy-cpu-limit annotation** is unset,
+the proxy will run a number of **worker threads equal to the number of CPU cores available**.
+
+```bash
+linkerd install --proxy-cpu-limit 2 | kubectl apply -f -
+```
+
+```bash
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: my-deployment
+  # ...
+spec:
+  template:
+    metadata:
+      annotations:
+        config.linkerd.io/proxy-cpu-limit: '1'
+```
+
+Unlike Kubernetes CPU limits and requests, which can be expressed in milliCPUs,
+the **proxy-cpu-limit annotation** should be expressed in **whole numbers of CPU cores**.
+Fractional values will be rounded up to the nearest whole number.
+
+---------------------------------------------------------------------------------------------------
+
+## Proxy Configuration
+
+Linkerd provides a set of **annotations** that can be used to **override the data plane proxy’s configuration**.
+
+[proxy configuration annotations list](https://linkerd.io/2.12/reference/proxy-configuration/#)
+
+```bash
+spec:
+  template:
+    metadata:
+      annotations:
+        config.linkerd.io/proxy-cpu-limit: "1"
+        config.linkerd.io/proxy-cpu-request: "0.2"
+        config.linkerd.io/proxy-memory-limit: 2Gi
+        config.linkerd.io/proxy-memory-request: 128Mi
+```
+
+### Ingress Mode
+
+it will **route requests** based on their **:authority, Host, or l5d-dst-override headers** instead of **their original destination**.
+
+The proxy can be made to run in ingress mode by used the **linkerd.io/inject: ingress** annotation
+rather than the default **linkerd.io/inject: enabled** annotation. This can also be done with 
+the **--ingress** flag in the inject CLI command:
+
+```bash
+kubectl get deployment <ingress-controller> -n <ingress-namespace> -o yaml | linkerd inject --ingress - | kubectl apply -f -
+```
+
+---------------------------------------------------------------------------------------------------
+
 ## Restricting Access To Services
 
 Linkerd policy resources can be used to restrict which clients may access a service. 

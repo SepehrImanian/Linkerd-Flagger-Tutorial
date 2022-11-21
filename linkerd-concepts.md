@@ -281,43 +281,6 @@ For destinations that are **in Kubernetes**, Linkerd will look up the **IP addre
 If the IP address **corresponds to a Service**, Linkerd will load balance **across the endpoints of that Service**
 and apply any **policy** from that Service’s **Service Profile**.
 
-## Configuring Proxy Concurrency
-
-The Linkerd data plane’s **proxies are multithreaded**, and are capable of running a variable number
-of worker threads so that their resource usage matches the application workload.
-
-
-he primary method of tuning proxy resource usage is **limiting the number of worker threads** used by the proxy to forward traffic. 
-
-### There are multiple methods for doing this:
-
-* **Using the proxy-cpu-limit Annotation**
-
-When the environment variable configured by the **proxy-cpu-limit annotation** is unset,
-the proxy will run a number of **worker threads equal to the number of CPU cores available**.
-
-```bash
-linkerd install --proxy-cpu-limit 2 | kubectl apply -f -
-```
-
-```bash
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: my-deployment
-  # ...
-spec:
-  template:
-    metadata:
-      annotations:
-        config.linkerd.io/proxy-cpu-limit: '1'
-```
-
-Unlike Kubernetes CPU limits and requests, which can be expressed in milliCPUs,
-the **proxy-cpu-limit annotation** should be expressed in **whole numbers of CPU cores**.
-Fractional values will be rounded up to the nearest whole number.
-
-
 ## Multi-cluster communication
 
 
