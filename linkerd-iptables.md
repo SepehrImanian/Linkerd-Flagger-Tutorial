@@ -1,11 +1,11 @@
-## Linkerd Iptables
+# Linkerd Iptables
 
 **init container** is used to set up **iptables rules** at the **start of an injected pod’s lifecycle**.
 **linkerd-init** will create two chains in the nat table: **PROXY_INIT_REDIRECT**, and **PROXY_INIT_OUTPUT**
 
 ---------------------------------------------------------------------------------------------------
 
-### Inbound connections
+## Inbound connections
 
 When a **packet arrives in a pod**, it will typically be processed by the **PREROUTING chain**, a **default chain attached to the nat table**.
 The **sidecar container** will create a new chain to process **inbound packets**, called **PROXY_INIT_REDIRECT**.
@@ -22,7 +22,7 @@ The **redirect chain** will be configured with two more rules:
 
 ---------------------------------------------------------------------------------------------------
 
-### Outbound connections
+## Outbound connections
 
 When a **packet leaves a pod**, it will first traverse the **OUTPUT chain**, the first **default chain an outgoing packet traverses in the nat table**.
 
@@ -41,7 +41,7 @@ any packet that traverses the **OUTPUT chain** should be **forwarded to** our **
 
 ---------------------------------------------------------------------------------------------------
 
-### A service send requests to itself
+## A service send requests to itself
 
 This scenario would typically apply when:
 
@@ -54,7 +54,7 @@ This scenario would typically apply when:
 
 ---------------------------------------------------------------------------------------------------
 
-### A service send requests to itself using its clusterIP
+## A service send requests to itself using its clusterIP
 
 in such cases, it is not guaranteed that the destination will be local. The packet follows an unusual path, as depicted in the diagram below.
 
@@ -64,7 +64,7 @@ in such cases, it is not guaranteed that the destination will be local. The pack
 
 ---------------------------------------------------------------------------------------------------
 
-### Rules table
+## Rules table
 
 if you want to inspect the iptables rules created for a pod, you can retrieve them through the following command:
 
