@@ -782,6 +782,38 @@ You may have noticed that there was a period of time after we created the **Serv
 we created the **ServerAuthorization** where **all requests were being rejected**, To avoid this situation in live systems
 ==> **create the ServiceAuthorizations BEFORE creating the Server so that clients will be authorized immediately**
 
+---------------------------------------------------------------------------------------------------
+
+## Using the Debug Sidecar
+
+Linkerd provides a debug sidecar with some helpful tooling. Similar to how proxy sidecar injection works.
+
+you add a **debug sidecar** to a pod by setting the **config.linkerd.io/enable-debug-sidecar: "true"** annotation at **pod creation time**.
+For convenience, the **linkerd inject** command provides an **--enable-debug-sidecar** option that does this annotation for you.
+
+> The debug sidecar image contains **tshark, tcpdump, lsof, and iproute2**. Once installed, it starts automatically logging all incoming and outgoing traffic with tshark, which can then be viewed with **kubectl logs**. Alternatively, you can use **kubectl exec** to access the container and run commands directly.
+
+```
+kubectl -n emojivoto get deploy/voting -o yaml \
+  | linkerd inject --enable-debug-sidecar - \
+  | kubectl apply -f -
+```
+
+inspect the HTTP headers of the requests, you could run something like this:
+
+```
+kubectl -n emojivoto exec -it \
+  $(kubectl -n emojivoto get pod -l app=voting-svc \
+    -o jsonpath='{.items[0].metadata.name}') \
+  -c linkerd-debug -- tshark -i any -f "tcp" -V -Y "http.request"
+
+kubectl -n emojivoto exec -it \
+  $(kubectl -n emojivoto get pod -l app=voting-svc \
+   -o jsonpath='{.items[0].metadata.name}') \
+   -c linkerd-debug -- tshark -i any -f "tcp" -V \
+   -Y "(tcp.srcport == 4143 and tcp.dstport == 50416) or tcp.port == 8080"
+```
+---------------------------------------------------------------------------------------------------
 
 ## Configuring Per-Route Policy
 
