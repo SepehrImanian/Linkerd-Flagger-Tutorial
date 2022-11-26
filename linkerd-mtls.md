@@ -212,6 +212,71 @@ kubectl rollout restart
 ```
 ---------------------------------------------------------------------------------------------------
 
+## Rotating webhooks certificates
+
+To secure the connections between the **Kubernetes API server and the webhooks**, all the webhooks are **TLS-enabled**.
+The **x509 certificates** used by these webhooks are issued by the **self-signed CA certificates embedded in the webhooks configuration**.
+
+By default, these certificates have a validity period of **365 days**. They are stored in the following **secrets**:
+
+* In the **linkerd namespace:** **linkerd-policy-validator-k8s-tls, linkerd-proxy-injector-k8s-tls and linkerd-sp-validator-k8s-tls**
+* In the **linkerd-viz namespace: tap-injector-k8s-tls**
+* In the **linkerd-jaeger namespace: jaeger-injector-k8s-tls**
+
+### Renewing the webhook certificates
+
+To check the validity of all the TLS secrets:
+
+```bash
+SECRETS=("linkerd-policy-validator-k8s-tls" "linkerd-proxy-injector-k8s-tls" "linkerd-sp-validator-k8s-tls" "tap-injector-k8s-tls" "jaeger-injector-k8s-tls")
+NS=("linkerd" "linkerd" "linkerd-viz" "linkerd-jaeger")
+for idx in "${!SECRETS[@]}"; do \
+  kubectl -n "${NS[$idx]}" get secret "${SECRETS[$idx]}" -ojsonpath='{.data.tls\.crt}' | \
+    base64 --decode - | \
+    step certificate inspect - | \
+    grep -iA2 validity; \
+done
+```
+Manually delete these secrets and use upgrade/install to recreate them,
+The command will recreate the secrets without restarting Linkerd.
+
+```bash
+for idx in "${!SECRETS[@]}"; do \
+  kubectl -n "${NS[$idx]}" delete secret "${SECRETS[$idx]}"; \
+done
+
+linkerd upgrade | kubectl apply -f -
+linkerd viz install | kubectl apply -f -
+linkerd jaeger install | kubectl apply -f -
+```
+
+Confirm that the secrets are recreated with new certificates:
+
+```
+for idx in "${!SECRETS[@]}"; do \
+  kubectl -n "${NS[$idx]}" get secret "${SECRETS[$idx]}" -ojsonpath='{.data.crt\.pem}' | \
+    base64 --decode - | \
+    step certificate inspect - | \
+    grep -iA2 validity; \
+done
+
+linkerd check
+```
+
+Restarting the pods that implement the webhooks and API services is usually not necessary,
+If you **observe certificate expiry errors or mismatched CA certs, restart their pods** with:
+
+```bash
+kubectl -n linkerd rollout restart deploy \
+  linkerd-proxy-injector \
+  linkerd-sp-validator \
+
+kubectl -n linkerd-viz rollout restart deploy tap tap-injector
+kubectl -n linkerd-jaeger rollout restart deploy jaeger-injector
+```
+
+---------------------------------------------------------------------------------------------------
+
 ## Automatically Rotating Control Plane TLS Credentials
 
 
