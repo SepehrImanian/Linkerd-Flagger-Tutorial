@@ -23,5 +23,4 @@
 > And in this part, you will learn all the skills you need to know about TLS and its difference with MTLs and how to manage it, including renewing certificates manually and automatically, and their different types of linkerd certificates.
 
 * ### [Linkerd Iptables](./linkerd-iptables.md)
-> if you want know about what's happpend in linkerd network and how they communicate to each other , you should figure out Iptables in Linkerd
- and this part explain deep dive into Iptables in Linkerd.
+> if you want know about what's happpend in linkerd network and how they communicate to each other , you should figure out Iptables in Linkerd and this part explain deep dive into Iptables in Linkerd.
