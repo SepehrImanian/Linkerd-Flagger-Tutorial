@@ -55,3 +55,32 @@ in such cases, it is not guaranteed that the destination will be local. The pack
 ![iptables a service send requests to itself](./images/iptables-itself-clusterIP.png)
 
 ### Rules table
+
+if you want to inspect the iptables rules created for a pod, you can retrieve them through the following command:
+
+```bash
+kubectl -n <namesppace> logs <pod-name> linkerd-init
+```
+[iptables rules table in outbound and inbound](https://linkerd.io/2.12/reference/iptables/#rules-table)
+
+## Proxy Init Iptables Modes
+
+Linkerd will configure a set of firewall rules in each injected pod. 
+Configuration can be done either through an **init container** or through a **CNI plugin**
+
+Linkerd’s init container can be run in two separate modes: **legacy** or **nft**. 
+The difference between the two modes is what variant of **iptables** they will use to configure firewall rules.
+Once configured, all injected workloads (including the control plane) will use the **same mode** in the **init container**.
+
+
+* **legacy mode** will call into **iptables-legacy** for firewall configuration. 
+    This is the **default mode that linkerd-init runs in**, and is supported by most operating systems and distributions.
+
+* **nft mode** will call into **iptables-nft**, which uses the **newer nf_tables kernel API**.
+    The [nftables] utilities are used by **newer operating systems** to configure firewalls by default.
+
+```bash
+linkerd install --set "proxyInit.mode=nft" | kubectl apply -f -
+```
+
+[legacy vs nft mode](https://developers.redhat.com/blog/2020/08/18/iptables-the-two-variants-and-their-relationship-with-nftables#)
