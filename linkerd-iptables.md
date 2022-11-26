@@ -1,7 +1,7 @@
 # Linkerd Iptables
 
 **init container** is used to set up **iptables rules** at the **start of an injected pod’s lifecycle**.
-**linkerd-init** will create two chains in the nat table: **PROXY_INIT_REDIRECT**, and **PROXY_INIT_OUTPUT**
+**linkerd-init** will create two chains in the **nat table**: **PROXY_INIT_REDIRECT**, and **PROXY_INIT_OUTPUT**
 
 ---------------------------------------------------------------------------------------------------
 
