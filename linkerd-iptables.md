@@ -35,4 +35,23 @@ any packet that traverses the **OUTPUT chain** should be **forwarded to** our **
 
 ![iptables Outbound connections](./images/iptables-outbound-connections.png)
 
+### A service send requests to itself
+
+This scenario would typically apply when:
+
+* **The destination** is **the pod (or endpoint) IP address**. (target another container in the pod)
+* **The destination** is **a port bound on localhost** (regardless of which container it belongs to).
+
+> The **first rule will be skipped**, since the **owner is the application, and not the proxy**. Once **the second rule is matched**, the packets will return to the first output chain, from here, they’ll be **sent directly to the service**.
+
+![iptables a service send requests to itself](./images/iptables-itself.png)
+
+### A service send requests to itself using its clusterIP
+
+in such cases, it is not guaranteed that the destination will be local. The packet follows an unusual path, as depicted in the diagram below.
+
+> the packet’s destination will be an address that **is not considered to be local by the kernel**, it is, after all, a **virtual IP**. The proxy will process the packet, at a connection level, connections to **a clusterIP will be load balanced between endpoints**.,Chances are that the endpoint selected will be the pod itself, **packets will therefore never leave the pod**; the destination will be resolved to the podIP. In practice, this is treated as if the destination was loopback, with the exception that the packet is forwarded through the proxy, instead of being forwarded from the service directly to itself.
+
+![iptables a service send requests to itself](./images/iptables-itself-clusterIP.png)
+
 ### Rules table
