@@ -289,7 +289,7 @@ kubectl create namespace linkerd
 
 using the step tool, create a signing key pair and store it in a Kubernetes Secret
 for longer-lived trust anchor certificate, pass the **--not-after** (--not-after=87600h)
-```
+```bash
 step certificate create root.linkerd.cluster.local ca.crt ca.key \
   --profile root-ca --no-password --insecure &&
   kubectl create secret tls \

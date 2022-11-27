@@ -418,4 +418,247 @@ we created the **ServerAuthorization** where **all requests were being rejected*
 
 we’ll use the Books demo app to demonstrate how to control which clients can access particular routes on a service.
 
+![example per-Route policy](./images/per-route-policy.png)
+
+
 ### Creating a Server resource
+
+command to list **the authorization resources** that currently exist for the **authors deployment**:
+
+
+```bash
+linkerd viz authz -n booksapp deploy/authors
+```
+
+> **In addition, a separate authorization is generated to allow liveness and readiness probes from the kubelet**.
+
+```
+ROUTE    SERVER                       AUTHORIZATION                UNAUTHORIZED  SUCCESS     RPS  LATENCY_P50  LATENCY_P95  LATENCY_P99
+default  default:all-unauthenticated  default/all-unauthenticated        0.0rps   70.31%  8.1rps          1ms         43ms         49ms
+probe    default:all-unauthenticated  default/probe                      0.0rps  100.00%  0.3rps          1ms          1ms          1ms
+```
+
+create a Server resource for the **authors deployment’s service port**:
+
+```yaml
+kubectl apply -f - <<EOF
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: Server
+metadata:
+  name: authors-server
+  namespace: booksapp
+spec:
+  podSelector:
+    matchLabels:
+      app: authors
+      project: booksapp
+  port: service
+EOF
+```
+
+see that all traffic to **authors is currently unauthorized**:
+
+```
+linkerd viz authz -n booksapp deploy/authors
+```
+
+```
+ROUTE    SERVER                       AUTHORIZATION                UNAUTHORIZED  SUCCESS     RPS  LATENCY_P50  LATENCY_P95  LATENCY_P99
+default  authors-server                                                  9.5rps    0.00%  0.0rps          0ms          0ms          0ms
+probe    authors-server               default/probe                      0.0rps  100.00%  0.1rps          1ms          1ms          1ms
+default  default:all-unauthenticated  default/all-unauthenticated        0.0rps  100.00%  0.1rps          1ms          1ms          1ms
+probe    default:all-unauthenticated  default/probe                      0.0rps  100.00%  0.2rps          1ms          1ms          1ms
+```
+
+### Creating per-route policy resources
+
+create **HTTPRoute resources for the authors service**:
+
+```yaml
+kubectl apply -f - <<EOF
+
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: authors-get-route
+  namespace: booksapp
+spec:
+  parentRefs:
+    - name: authors-server
+      kind: Server
+      group: policy.linkerd.io
+  rules:
+    - matches:
+      - path:
+          value: "/authors.json"
+        method: GET
+      - path:
+          value: "/authors/"
+          type: "PathPrefix"
+        method: GET
+EOF
+```
+
+create an **AuthorizationPolicy** resource that defines policy for our:
+
+```yaml
+kubectl apply -f - <<EOF
+
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: authors-get-policy
+  namespace: booksapp
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: HTTPRoute
+    name: authors-get-route
+  requiredAuthenticationRefs:
+    - name: authors-get-authn
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: MeshTLSAuthentication
+metadata:
+  name: authors-get-authn
+  namespace: booksapp
+spec:
+  identities:
+    - "books.booksapp.serviceaccount.identity.linkerd.cluster.local"
+    - "webapp.booksapp.serviceaccount.identity.linkerd.cluster.local"
+EOF
+```
+
+the default route for **liveness and readiness probes** will no longer be used, and the authors service will become **unready**.
+Therefore , we must also create a HTTPRoute and AuthorizationPolicy so that **probes from the Kubelet are still authorized**:
+
+```yaml
+kubectl apply -f - <<EOF
+
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: authors-probe-route
+  namespace: booksapp
+spec:
+  parentRefs:
+    - name: authors-server
+      kind: Server
+      group: policy.linkerd.io
+  rules:
+    - matches:
+      - path:
+          value: "/ping"
+        method: GET
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: NetworkAuthentication
+metadata:
+  name: authors-probe-authn
+  namespace: booksapp
+spec:
+  networks:
+  - cidr: 0.0.0.0/0
+  - cidr: ::/0
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: authors-probe-policy
+  namespace: booksapp
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: HTTPRoute
+    name: authors-probe-route
+  requiredAuthenticationRefs:
+    - name: authors-probe-authn
+      kind: NetworkAuthentication
+      group: policy.linkerd.io
+EOF
+```
+
+create an **additional HTTPRoute** resource that matches **PUT, POST, and DELETE** requests:
+
+```yaml
+kubectl apply -f - <<EOF
+
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: authors-modify-route
+  namespace: booksapp
+spec:
+  parentRefs:
+    - name: authors-server
+      kind: Server
+      group: policy.linkerd.io
+  rules:
+    - matches:
+      - path:
+          value: "/authors/"
+          type: "PathPrefix"
+        method: DELETE
+      - path:
+          value: "/authors/"
+          type: "PathPrefix"
+        method: PUT
+      - path:
+          value: "/authors.json"
+        method: POST
+EOF
+```
+
+create authorization and authentication policy resources to authorize this route:
+
+```yaml
+kubectl apply -f - <<EOF
+
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: authors-modify-policy
+  namespace: booksapp
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: HTTPRoute
+    name: authors-modify-route
+  requiredAuthenticationRefs:
+    - name: authors-modify-authn
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+---
+apiVersion: policy.linkerd.io/v1alpha1
+kind: MeshTLSAuthentication
+metadata:
+  name: authors-modify-authn
+  namespace: booksapp
+spec:
+  identities:
+    - "webapp.booksapp.serviceaccount.identity.linkerd.cluster.local"
+EOF
+```
+
+```bash
+linkerd viz authz -n booksapp deploy/authors
+```
+
+see that all traffic is **authorized**:
+
+```
+ROUTE                 SERVER                       AUTHORIZATION                              UNAUTHORIZED  SUCCESS     RPS  LATENCY_P50  LATENCY_P95  LATENCY_P99
+authors-get-route     authors-server               authorizationpolicy/authors-get-policy           0.0rps  100.00%  0.1rps          0ms          0ms          0ms
+authors-modify-route  authors-server               authorizationpolicy/authors-modify-policy        0.0rps  100.00%  0.0rps          0ms          0ms          0ms
+authors-probe-route   authors-server               authorizationpolicy/authors-probe-policy         0.0rps  100.00%  0.1rps          1ms          1ms          1ms
+default               default:all-unauthenticated  default/all-unauthenticated                      0.0rps  100.00%  0.1rps          1ms          1ms          1ms
+probe                 default:all-unauthenticated  default/probe                                    0.0rps  100.00%  0.2rps          1ms          1ms          1ms
+```
