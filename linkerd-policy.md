@@ -616,7 +616,7 @@ spec:
 EOF
 ```
 
-create authorization and authentication policy resources to authorize this route:
+create **authorization and authentication policy** resources to **authorize** this route:
 
 ```yaml
 kubectl apply -f - <<EOF
