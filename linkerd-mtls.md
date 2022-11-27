@@ -77,7 +77,7 @@ linkerd install \
 
 Understanding the current state of your system:
 
-```
+```bash
 linkerd check --proxy
 ```
 
@@ -114,12 +114,12 @@ linkerd upgrade --identity-trust-anchors-file=./bundle.crt | kubectl apply -f -
 
 we need to **restart your meshed workloads** so that they use the new trust anchor
 
-```
+```bash
 kubectl -n emojivoto rollout restart deploy
 ```
 
 check command to ensure that everything is ok :
-```
+```bash
 linkerd check --proxy
 ```
 
@@ -252,7 +252,7 @@ linkerd jaeger install | kubectl apply -f -
 
 Confirm that the secrets are recreated with new certificates:
 
-```
+```bash
 for idx in "${!SECRETS[@]}"; do \
   kubectl -n "${NS[$idx]}" get secret "${SECRETS[$idx]}" -ojsonpath='{.data.crt\.pem}' | \
     base64 --decode - | \
@@ -303,8 +303,7 @@ step certificate create root.linkerd.cluster.local ca.crt ca.key \
 
 **create root certificate (Trust anchor certificate)**
 
-```
-kubectl apply -f - <<EOF
+```yaml
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -313,15 +312,13 @@ metadata:
 spec:
   ca:
     secretName: linkerd-trust-anchor
-EOF
 ```
 
 ### Create a Certificate resource referencing the Issuer
 
 **create Issuer certificate and key**
 
-```
-kubectl apply -f - <<EOF
+```yaml
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -345,7 +342,6 @@ spec:
   - crl sign
   - server auth
   - client auth
-EOF
 ```
 cert-manager can now use this Certificate resource to **obtain TLS credentials**,
 which will be stored in a **secret named linkerd-identity-issuer**
@@ -381,7 +377,7 @@ If these certificates expire or need to be regenerated for any reason, performin
 
 ### Install Cert manager and Linkerd
 
-```
+```bash
 # control plane core
 kubectl create namespace linkerd
 kubectl label namespace linkerd \
@@ -402,7 +398,7 @@ kubectl label namespace linkerd-jaeger linkerd.io/extension=jaeger
 ### Save the signing key pair as a Secret
 
 create a **signing key pair** which will be used to sign each of the **webhook certificates**:
-```
+```bash
 step certificate create webhook.linkerd.cluster.local ca.crt ca.key \
   --profile root-ca --no-password --insecure --san webhook.linkerd.cluster.local
 
@@ -419,8 +415,7 @@ kubectl create secret tls webhook-issuer-tls --cert=ca.crt --key=ca.key --namesp
 
 we can create **cert-manager “Issuer”** resources that reference them:
 
-```
-kubectl apply -f - <<EOF
+```yaml
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -449,15 +444,13 @@ metadata:
 spec:
   ca:
     secretName: webhook-issuer-tls
-EOF
 ```
 
 ### Issuing certificates and writing them to secrets
 
 create **cert-manager "Certificate"** resources which **use the Issuers to generate the desired certificates**:
 
-```
-kubectl apply -f - <<EOF
+```yaml
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -587,14 +580,13 @@ spec:
     algorithm: ECDSA
   usages:
   - server auth
-EOF
 ```
 
 ### Using these credentials with CLI installation
 
 To **configure Linkerd to use the credentials** from cert-manager rather than generating its own:
 
-```
+```bash
 # first, install the Linkerd CRDs
 linkerd install --crds | kubectl apply -f -
 
