@@ -418,7 +418,7 @@ we created the **ServerAuthorization** where **all requests were being rejected*
 
 we’ll use the Books demo app to demonstrate how to control which clients can access particular routes on a service.
 
-![example per-Route policy](./images/per-route-policy.png) 
+![example per-Route policy](./images/configuring-per-route-policy.png) 
 
 
 ### Creating a Server resource
