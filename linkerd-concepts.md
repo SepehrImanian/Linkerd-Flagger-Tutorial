@@ -170,49 +170,6 @@ splits this metric into **EFFECTIVE_RPS** and **ACTUAL_RPS**, corresponding to r
 Times taken to service requests per service/route are split into **50th**, **95th** and **99th** **percentiles**. 
 Lower percentiles give you an overview of the average performance of the system, while tail percentiles help catch outlier behavior.
 
-
----------------------------------------------------------------------------------------------------
-
-## Authorization Policy
-
-Linkerd’s authorization policy allows you to control which types of traffic are allowed to meshed pods.
-
-**example:**
-you can restrict communication to a particular service (or HTTP route on a service) to only come from certain other services;
-you can enforce that mTLS must be used on a certain port; and so on
-
-
-### Default policies
-
-
-The **config.linkerd.io/default-inbound-policy** annotation can be set at a namespace, workload, and pod level,
-and will determine the default traffic policy at that point in the hierarchy
-
-
-* **all-unauthenticated:** allow all requests. **This is the default**.
-* **all-authenticated:** allow requests from meshed clients only.
-* **cluster-authenticated:** allow requests form meshed clients in the same cluster. (multi cluster)
-* **deny:** deny all requests.
-
-Every cluster has a cluster-wide default policy (**by default, all-unauthenticated**), set at install time.
-Annotations that are present at the workload or **namespace level** at pod creation time can override that value 
-to determine the default policy for that pod.
-
-
-### Fine-grained policies
-
-For finer-grained policy that applies to specific **ports**, **routes**, or more, Linkerd uses a set of **CRDs**.
-
-* **Server:** all traffic to a port, for a set of pods in a namespace
-* **HTTPRoute:** a subset of HTTP requests for a Server
-* **MeshTLSAuthentication:** authentication
-* **NetworkAuthentication:** authentication based on IP address
-* **AuthorizationPolicy:** a policy that restricts access to one or more targets unless an authentication rule is met
-* **ServerAuthorization:** an earlier form of policy that restricts access to **Servers** only (not **HTTPRoutes**)
-
-**AuthorizationPolicy** as a more flexible alternative to **ServerAuthorization** that can target **HTTPRoutes** as well as **Servers**.
-**ServerAuthorization will be deprecated in future releases**.
-
 ---------------------------------------------------------------------------------------------------
 
 ## Debugging 502s
