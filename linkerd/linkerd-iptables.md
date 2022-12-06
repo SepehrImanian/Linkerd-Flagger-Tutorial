@@ -18,7 +18,7 @@ The **redirect chain** will be configured with two more rules:
 
 > The packet will arrive on the **PREROUTING chain** and will be immediately routed to the **redirect chain**. If its destination port matches any of the **inbound ports to skip**, then it will be **forwarded directly to the application process**, bypassing the proxy., Redirection is done by changing the incoming packet’s **destination header**, the target port will be **replaced with 4143, which is the proxy’s inbound port**. ,The proxy will process the packet and **produce a new one** that will be **forwarded to the service**; it will be able to get **the original target (IP:PORT) of the inbound packet** by using a **special socket option SO_ORIGINAL_DST** ,The new packet will be routed through the **OUTPUT chain**, from there it will be **sent to the application**.
 
-![iptables Inbound connections](./images/iptables-Inbound-connections.png)
+![iptables Inbound connections](./../images/iptables-Inbound-connections.png)
 
 ---------------------------------------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ any packet that traverses the **OUTPUT chain** should be **forwarded to** our **
 
 > the **packet’s header** (**SO_ORIGINAL_DST**) will be **re-written** to target the **outbound port**. The proxy will process the packet and then forward it to its destination
 
-![iptables Outbound connections](./images/iptables-outbound-connections.png)
+![iptables Outbound connections](./../images/iptables-outbound-connections.png)
 
 ---------------------------------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ This scenario would typically apply when:
 
 > The **first rule will be skipped**, since the **owner is the application, and not the proxy**. Once **the second rule is matched**, the packets will return to the first output chain, from here, they’ll be **sent directly to the service**.
 
-![iptables a service send requests to itself](./images/iptables-itself.png)
+![iptables a service send requests to itself](./../images/iptables-itself.png)
 
 ---------------------------------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ in such cases, it is not guaranteed that the destination will be local. The pack
 
 > the packet’s destination will be an address that **is not considered to be local by the kernel**, it is, after all, a **virtual IP**. The proxy will process the packet, at a connection level, connections to **a clusterIP will be load balanced between endpoints**.,Chances are that the endpoint selected will be the pod itself, **packets will therefore never leave the pod**; the destination will be resolved to the podIP. In practice, this is treated as if the destination was loopback, with the exception that the packet is forwarded through the proxy, instead of being forwarded from the service directly to itself.
 
-![iptables a service send requests to itself](./images/iptables-itself-clusterIP.png)
+![iptables a service send requests to itself](./../images/iptables-itself-clusterIP.png)
 
 ---------------------------------------------------------------------------------------------------
 

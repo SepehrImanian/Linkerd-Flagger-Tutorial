@@ -13,7 +13,7 @@ mTLS prevents various kinds of attacks, including:
 * Phishing attacks
 * Malicious API requests
 
-![mtls](./images/how_mtls_works-what_is_mutual_tls.png)
+![mtls](./../images/how_mtls_works-what_is_mutual_tls.png)
 
 ---------------------------------------------------------------------------------------------------
 

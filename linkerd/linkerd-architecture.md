@@ -24,5 +24,5 @@ designed specifically for the service mesh use case and is not designed as a gen
 The linkerd-init container is added to each meshed pod as a Kubernetes **init container** that runs before any other containers are started. It uses **iptables** to route all TCP traffic to and from the pod through the proxy. Linkerd’s init container can be run in different modes which determine what **iptables variant** is used.
 
 
-![mtls](./images/control-plane.png)
+![mtls](./../images/control-plane.png)
 
