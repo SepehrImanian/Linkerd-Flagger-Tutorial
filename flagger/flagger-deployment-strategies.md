@@ -29,6 +29,9 @@ The canary analysis runs periodically until it **reaches the maximum traffic wei
   skipAnalysis: false
 ```
 
+**spec.skipAnalysis: true** => When skip analysis is enabled, Flagger checks if the **canary deployment is healthy and promotes it without analysing it**
+**stepWeightPromotion** => the promotion phase happens in stages, the traffic is routed back to the primary pods in a progressive manner, the primary weight is increased until it reaches 100%.
+
 **The above analysis, if it succeeds, will run for 25 minutes while validating the HTTP metrics and webhooks every minute**
 
 You can determine the **minimum time it takes to validate and promote a canary deployment** using **this formula**:
@@ -41,6 +44,47 @@ And the **time** it takes for a **canary to be rollback** when the metrics or we
 
 ```
 interval * threshold
+```
+
+#### Rollout Weights
+
+By default Flagger uses **linear weight** values for the promotion, with the start value, the step and the maximum weight value in 0 to 100 range.
+
+
+starting from 20, increasing by 20 until weight goes above 50
+
+```yaml
+canary:
+  analysis:
+    promotion:
+      maxWeight: 50
+      stepWeight: 20
+```
+
+(canary weight : primary weight):
+```
+20 (20 : 80)
+40 (40 : 60)
+60 (60 : 40)
+promotion
+```
+
+**stepWeights** - determines the ordered array of weights, which shall be used during canary promotion
+
+starting from 1, going through stepWeights values till 80:
+```yaml
+canary:
+  analysis:
+    promotion:
+      stepWeights: [1, 2, 10, 80]
+```
+(canary weight : primary weight):
+```
+1 (1 : 99)
+2 (2 : 98)
+10 (10 : 90)
+80 (20 : 60)
+promotion
 ```
 
 ### A/B Testing (HTTP headers and cookies traffic routing)
